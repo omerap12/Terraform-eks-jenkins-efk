@@ -4,7 +4,7 @@ pipeline {
     environment {
         AWS_ACCESS_KEY_ID = credentials('AWS_ACCESS_KEY_ID')
         AWS_SECRET_ACCESS_KEY = credentials('AWS_SECRET_ACCESS_KEY')
-        EKS_CLUSTER_NAME = 'dev-cluster'
+        EKS_CLUSTER_NAME = 'omer-cluster'
         NAMESPACE = 'default'
     }
     
