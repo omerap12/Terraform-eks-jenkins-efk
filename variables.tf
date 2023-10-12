@@ -4,7 +4,7 @@
 variable "cluster_name" {
   type        = string
   description = "The name of the EKS cluster."
-  default     = "dev-cluster"
+  default     = "omer-cluster"
 }
 
 variable "cluster_version" {
@@ -16,7 +16,7 @@ variable "cluster_version" {
 variable "worker_group_name" {
   type        = string
   description = "The name of the EKS worker node group."
-  default     = "dev-worker-group-1"
+  default     = "omer-worker-group-1"
 }
 
 variable "worker_group_instance_type" {
