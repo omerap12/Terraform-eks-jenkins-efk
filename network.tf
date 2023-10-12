@@ -1,7 +1,7 @@
 resource "aws_vpc" "dev-vpc" {
   cidr_block = var.vpc_cidr_block
   tags = {
-    Name = "development"
+    Name = "eks-vpc"
   }
 }
 
@@ -35,7 +35,7 @@ resource "aws_internet_gateway" "dev-gw" {
   vpc_id = aws_vpc.dev-vpc.id
 
   tags = {
-    Name = "dev-gw"
+    Name = "eks-gw"
   }
 }
 

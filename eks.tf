@@ -7,6 +7,20 @@ module "my-cluster" {
   subnet_ids      = [aws_subnet.dev1-subnet.id, aws_subnet.dev2-subnet.id]
   vpc_id          = aws_vpc.dev-vpc.id
 
+  cluster_addons = {
+    coredns = {
+      most_recent = true
+    }
+    kube-proxy = {
+      most_recent = true
+    }
+    vpc-cni = {
+      most_recent = true
+    }
+    ebs-csi-driver = {
+      most_recent = true
+    }
+  }
 
   eks_managed_node_group_defaults = {
     instance_types = var.worker_group_instance_type
