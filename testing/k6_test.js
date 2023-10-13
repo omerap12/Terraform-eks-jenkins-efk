@@ -2,11 +2,11 @@ import http from 'k6/http';
 import { sleep } from 'k6';
 
 export const options = {
-  vus: 200,
-  duration: '30s',
+  vus: 800,
+  duration: '10m',
 };
 
 export default function () {
-  http.get('http://afb76ff39267740da9d43120f5d79673-320099975.us-east-1.elb.amazonaws.com');
+  http.get('http://a1dd58729ebce4e5a9b693353f7d6eb4-2088570777.us-east-1.elb.amazonaws.com');
   sleep(1);
 }
