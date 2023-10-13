@@ -17,9 +17,6 @@ module "my-cluster" {
     vpc-cni = {
       most_recent = true
     }
-    ebs-csi-driver = {
-      most_recent = true
-    }
   }
 
   eks_managed_node_group_defaults = {
