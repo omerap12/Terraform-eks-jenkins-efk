@@ -56,13 +56,24 @@ pipeline {
                 }
             }
         }
+        stage('Write values.yml') {
+            steps {
+                // Write the values.yaml file to the workspace.
+                writeYaml file: 'values.yml', data: [
+                resources: [
+                    requests: [cpu: '100m'],
+                    limits: [cpu: '200m']
+                ],
+                service: [type: 'LoadBalancer']
+                ]
+            }
         stage ('Deploy binomi helm chart') {
             steps {
                 script {
                     sh '''
                         helm repo add bitnami https://charts.bitnami.com/bitnami
                         helm repo update
-                        helm install my-nginx-release bitnami/nginx --namespace $NAMESPACE
+                        helm install my-nginx-release bitnami/nginx --namespace $NAMESPACE --values values.yml
                     '''
                 }
             }
