@@ -72,7 +72,6 @@ pipeline {
                 }
             }
         }
-        
         stage('Write values.yml') {
             steps {
                 script {
@@ -94,7 +93,7 @@ pipeline {
                         helm repo add bitnami https://charts.bitnami.com/bitnami
                         helm repo update
                         helm install my-nginx-release bitnami/nginx --namespace $NAMESPACE --values values.yml
-                        sleep 60
+                        sleep 20
                         kubectl get deployment
                     '''
                 }
@@ -106,6 +105,7 @@ pipeline {
                 script {
                     sh '''
                         kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml
+                        sleep 60
                     '''
                 }
             }
@@ -113,21 +113,53 @@ pipeline {
         stage ('Check metric server') {
             steps {
                 script {
-                    sh 'sleep 60'
                     sh 'kubectl get deployment metrics-server -n kube-system'
                     sh 'kubectl top node'
                 }
                     
             }
         }
-        
-        stage ('Add CPU autoscaling') {
+
+        stage ('Install Keda') {
             steps {
                 script {
-                    sh "kubectl autoscale deployment my-nginx-release --cpu-percent=90 --min=1 --max=10 -n $NAMESPACE"
+                    sh "kubectl apply --server-side -f https://github.com/kedacore/keda/releases/download/v2.12.0/keda-2.12.0-core.yaml"
                 }
             }
         }
+
+        stage ('Create keda-cpu autoscaling') {
+            steps {
+                script {
+                    writeFile file: 'cpu-scaledobject.yml', text: '''
+                        apiVersion: keda.sh/v1alpha1
+                        kind: ScaledObject
+                        metadata:
+                          name: cpu-scaledobject
+                          namespace: default
+                        spec:
+                          scaleTargetRef:
+                            name: my-nginx-release
+                          triggers:
+                          - type: cpu
+                            metricType: Utilization
+                            metadata:
+                              value: "90"
+                    '''
+                }
+            }
+        }
+
+        stage ('Create CPU autoscaling') {
+            steps {
+                script {
+                    sh 'kubectl apply -f cpu-scaledobject.yml'
+                    sleep 5
+                    sh 'kubectl get scaledobject'
+                }
+            }
+        }
+
     }
     
     post {
@@ -135,6 +167,8 @@ pipeline {
             // Clean up resources, if needed
             sh 'rm -rf awscliv2.zip'
             sh 'rm -rf get_helm.sh'
+            sh 'rm -rf values.yml'
+            sh 'rm -rf cpu-scaledobject.yml'
         }
     }
 }
