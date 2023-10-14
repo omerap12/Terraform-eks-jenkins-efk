@@ -13,11 +13,11 @@ pipeline {
             steps {
                 script {
                     sh '''
-                        curl -fsSL -o get_helm.sh "https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3" -o "get_helm.sh"
+                        curl -fsSL -o get_helm.sh "https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3"
                         chmod 700 get_helm.sh
                         ./get_helm.sh
                         echo "Helm installed successfully"
-                        which helm
+                        helm version --short
                     '''
                 }
             }
@@ -27,15 +27,16 @@ pipeline {
             steps {
                 script {
                     sh '''
-                        curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+                        curl -fsSL -o awscliv2.zip "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip"
                         unzip -o awscliv2.zip
                         ./aws/install --update
                         echo "AWS CLI installed successfully"
-                        which aws
+                        aws --version
                     '''
                 }
             }
         }
+        
         stage ('Connect to aws') {
             steps {
                 script {
@@ -49,6 +50,7 @@ pipeline {
                 }
             }
         }
+        
         stage ('Connect to EKS cluster') {
             steps {
                 script {
@@ -56,25 +58,73 @@ pipeline {
                 }
             }
         }
+        
+        stage('Install kubectl') {
+            steps {
+                script {
+                    sh '''
+                        curl -LO "https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl"
+                        chmod +x kubectl
+                        mv kubectl /usr/local/bin/
+                        kubectl version --client
+                        echo "kubectl installed successfully"
+                    '''
+                }
+            }
+        }
+        
         stage('Write values.yml') {
             steps {
-                // Write the values.yaml file to the workspace.
-                writeYaml file: 'values.yml', data: [
-                resources: [
-                    requests: [cpu: '100m'],
-                    limits: [cpu: '200m']
-                ],
-                service: [type: 'LoadBalancer']
-                ]
+                script {
+                    writeFile file: 'values.yml', text: '''
+                        resources:
+                          requests:
+                            cpu: '100m'
+                          limits:
+                            cpu: '200m'
+                    '''
+                }
             }
-        stage ('Deploy binomi helm chart') {
+        }
+        
+        stage ('Deploy binami Helm chart') {
             steps {
                 script {
                     sh '''
                         helm repo add bitnami https://charts.bitnami.com/bitnami
                         helm repo update
                         helm install my-nginx-release bitnami/nginx --namespace $NAMESPACE --values values.yml
+                        sleep 60
+                        kubectl get deployment
                     '''
+                }
+            }
+        }
+        
+        stage ('Deploy metric server') {
+            steps {
+                script {
+                    sh '''
+                        kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml
+                    '''
+                }
+            }
+        }
+        stage ('Check metric server') {
+            steps {
+                script {
+                    sh 'sleep 60'
+                    sh 'kubectl get deployment metrics-server -n kube-system'
+                    sh 'kubectl top node'
+                }
+                    
+            }
+        }
+        
+        stage ('Add CPU autoscaling') {
+            steps {
+                script {
+                    sh "kubectl autoscale deployment my-nginx-release --cpu-percent=90 --min=1 --max=10 -n $NAMESPACE"
                 }
             }
         }
@@ -83,7 +133,8 @@ pipeline {
     post {
         always {
             // Clean up resources, if needed
-            sh 'rm -rf awscliv2.zip aws'
+            sh 'rm -rf awscliv2.zip'
+            sh 'rm -rf get_helm.sh'
         }
     }
 }
