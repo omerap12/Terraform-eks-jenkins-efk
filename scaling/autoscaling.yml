@@ -1,0 +1,20 @@
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: cron-cpu-scaledobject
+  namespace: default
+spec:
+  scaleTargetRef:
+    name: my-nginx-release
+  minReplicaCount: 2
+  triggers:
+  - type: cron
+    metadata:
+      timezone: Asia/Jerusalem
+      start: "35 10 * * *"
+      end: "45 12 * * *"
+      desiredReplicas: "10"
+  - type: cpu
+    metricType: Utilization
+    metadata:
+      value: "90"
