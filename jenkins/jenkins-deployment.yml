@@ -1,9 +1,4 @@
 apiVersion: apps/v1
-kind: Namespace
-metadata:
-  name: jenkins
----
-apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: jenkins
@@ -40,4 +35,3 @@ spec:
     - protocol: TCP
       port: 80
       targetPort: 8080
-  type: LoadBalancer
