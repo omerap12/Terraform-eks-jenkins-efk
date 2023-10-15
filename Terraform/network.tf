@@ -12,7 +12,7 @@ resource "aws_subnet" "dev1-subnet" {
   map_public_ip_on_launch = true
 
   tags = {
-    Name                                        = "dev1-subnet"
+    Name                                        = "eks1-subnet"
     "kubernetes.io/cluster/${var.cluster_name}" = "owned"
     "kubernetes.io/role/elb"                    = "1"
   }
@@ -25,7 +25,7 @@ resource "aws_subnet" "dev2-subnet" {
   map_public_ip_on_launch = true
 
   tags = {
-    Name                                        = "dev2-subnet"
+    Name                                        = "eks2-subnet"
     "kubernetes.io/cluster/${var.cluster_name}" = "owned"
     "kubernetes.io/role/elb"                    = "1"
   }
@@ -54,7 +54,7 @@ resource "aws_route_table" "dev-route-table" {
 
 
   tags = {
-    Name = "dev-rt"
+    Name = "eks-rt"
   }
 }
 
