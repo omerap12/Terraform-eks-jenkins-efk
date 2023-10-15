@@ -149,8 +149,8 @@ pipeline {
                           - type: cron
                             metadata:
                               timezone: Asia/Jerusalem
-                              start: "57 11 * * *"
-                              end: "10 12 * * *"
+                              start: "30 9 * * *"
+                              end: "30 12 * * *"
                               desiredReplicas: "4"
                     '''
                 }
