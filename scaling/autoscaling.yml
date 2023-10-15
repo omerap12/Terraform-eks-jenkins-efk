@@ -5,15 +5,15 @@ metadata:
   namespace: default
 spec:
   scaleTargetRef:
-    name: my-nginx-release
+    name: my-nginx-realease
   minReplicaCount: 2
   triggers:
   - type: cron
     metadata:
       timezone: Asia/Jerusalem
-      start: "35 10 * * *"
-      end: "45 12 * * *"
-      desiredReplicas: "10"
+      start: "40 10 * * *"
+      end: "55 10 * * *"
+      desiredReplicas: "5"
   - type: cpu
     metricType: Utilization
     metadata:
