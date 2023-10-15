@@ -23,12 +23,10 @@ module "my-cluster" {
   }
 
   eks_managed_node_group_defaults = {
-    instance_types = var.worker_group_instance_type
-
+    instance_types                        = var.worker_group_instance_type
     attach_cluster_primary_security_group = false
     vpc_security_group_ids                = [aws_security_group.allow-web-traffic.id]
   }
-
 
   eks_managed_node_groups = {
     dev = {
