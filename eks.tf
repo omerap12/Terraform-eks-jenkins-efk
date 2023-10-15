@@ -28,14 +28,14 @@ module "my-cluster" {
     attach_cluster_primary_security_group = false
     vpc_security_group_ids                = [aws_security_group.allow-web-traffic.id]
   }
-  
+
 
   eks_managed_node_groups = {
-        dev = {
-            min_size = var.autoscaling_group_min_size
-            max_size = var.autoscaling_group_max_size
-            desired_size = var.autoscaling_group_desired_capacity
-            instance_types = var.worker_group_instance_type
-        }
+    dev = {
+      min_size       = var.autoscaling_group_min_size
+      max_size       = var.autoscaling_group_max_size
+      desired_size   = var.autoscaling_group_desired_capacity
+      instance_types = var.worker_group_instance_type
     }
+  }
 }
