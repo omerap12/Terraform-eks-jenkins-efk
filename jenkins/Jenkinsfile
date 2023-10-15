@@ -157,11 +157,11 @@ pipeline {
             }
         }
 
-        stage ('Create CPU autoscaling') {
+        stage ('Create CPU and Cron autoscaling') {
             steps {
                 script {
                     sh 'kubectl apply -f cpu-cron-scaledobject.yml'
-                    sleep 30
+                    sleep 60
                     sh 'kubectl get hpa -n default'
                 }
             }
