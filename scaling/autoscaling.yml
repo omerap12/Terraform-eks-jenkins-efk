@@ -13,7 +13,7 @@ spec:
       timezone: Asia/Jerusalem
       start: "40 10 * * *"
       end: "55 10 * * *"
-      desiredReplicas: "5"
+      desiredReplicas: "4"
   - type: cpu
     metricType: Utilization
     metadata:
