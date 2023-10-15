@@ -70,6 +70,14 @@ resource "aws_route_table_association" "dev2-sub-to-dev-rt" {
 
 resource "aws_security_group" "allow-web-traffic" {
   vpc_id = aws_vpc.dev-vpc.id
+  
+  ingress {
+    description = "Cluster access to karpetner"
+    protocol    = "tcp"
+    from_port   = 8081
+    to_port     = 8081
+    cidr_blocks = ["0.0.0.0/0"]
+  }
 
   ingress {
     description = "Cluster access to keda metrics"
