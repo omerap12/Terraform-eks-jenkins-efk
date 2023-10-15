@@ -28,19 +28,19 @@ variable "worker_group_instance_type" {
 variable "autoscaling_group_min_size" {
   type        = number
   description = "The minimum number of nodes the worker group can scale to."
-  default     = 1
+  default     = 2
 }
 
 variable "autoscaling_group_desired_capacity" {
   type        = number
   description = "The desired number of nodes the worker group should attempt to maintain."
-  default     = 1
+  default     = 2
 }
 
 variable "autoscaling_group_max_size" {
   type        = number
   description = "The maximum number of nodes the worker group can scale to."
-  default     = 3
+  default     = 4
 }
 
 variable "create_cluster_primary_security_group_tags" {
