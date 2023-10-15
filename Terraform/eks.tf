@@ -2,10 +2,11 @@ module "my-cluster" {
   source  = "terraform-aws-modules/eks/aws"
   version = "18.28.0"
 
-  cluster_name    = var.cluster_name
-  cluster_version = var.cluster_version
-  subnet_ids      = [aws_subnet.dev1-subnet.id, aws_subnet.dev2-subnet.id]
-  vpc_id          = aws_vpc.dev-vpc.id
+  cluster_name                   = var.cluster_name
+  cluster_version                = var.cluster_version
+  subnet_ids                     = [aws_subnet.dev1-subnet.id, aws_subnet.dev2-subnet.id]
+  vpc_id                         = aws_vpc.dev-vpc.id
+  cluster_endpoint_public_access = true
 
   cluster_addons = {
     coredns = {
