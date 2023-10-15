@@ -94,7 +94,7 @@ pipeline {
                         helm repo update
                         helm install my-nginx-release bitnami/nginx --namespace $NAMESPACE --values values.yml
                         sleep 20
-                        kubectl get deployment
+                        kubectl get deployment -n default
                     '''
                 }
             }
@@ -131,20 +131,27 @@ pipeline {
         stage ('Create keda-cpu autoscaling') {
             steps {
                 script {
-                    writeFile file: 'cpu-scaledobject.yml', text: '''
+                    writeFile file: 'cpu-cron-scaledobject.yml', text: '''
                         apiVersion: keda.sh/v1alpha1
                         kind: ScaledObject
                         metadata:
-                          name: cpu-scaledobject
+                          name: cron-cpu-scaledobject
                           namespace: default
                         spec:
                           scaleTargetRef:
                             name: my-nginx-release
+                          minReplicaCount: 2
                           triggers:
                           - type: cpu
                             metricType: Utilization
                             metadata:
                               value: "90"
+                          - type: cron
+                            metadata:
+                              timezone: Asia/Jerusalem
+                              start: "57 11 * * *"
+                              end: "10 12 * * *"
+                              desiredReplicas: "4"
                     '''
                 }
             }
@@ -153,13 +160,12 @@ pipeline {
         stage ('Create CPU autoscaling') {
             steps {
                 script {
-                    sh 'kubectl apply -f cpu-scaledobject.yml'
-                    sleep 5
-                    sh 'kubectl get scaledobject'
+                    sh 'kubectl apply -f cpu-cron-scaledobject.yml'
+                    sleep 30
+                    sh 'kubectl get hpa -n default'
                 }
             }
         }
-
     }
     
     post {
@@ -168,7 +174,7 @@ pipeline {
             sh 'rm -rf awscliv2.zip'
             sh 'rm -rf get_helm.sh'
             sh 'rm -rf values.yml'
-            sh 'rm -rf cpu-scaledobject.yml'
+            sh 'rm -rf cpu-cron-scaledobject.yml'
         }
     }
 }
