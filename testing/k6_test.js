@@ -7,6 +7,6 @@ export const options = {
 };
 
 export default function () {
-  http.get('http://a1dd58729ebce4e5a9b693353f7d6eb4-2088570777.us-east-1.elb.amazonaws.com');
+  http.get('LOAD_BALANCER_URL');
   sleep(1);
 }
