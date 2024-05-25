@@ -22,7 +22,7 @@ variable "worker_group_name" {
 variable "worker_group_instance_type" {
   type        = list(string)
   description = "The instance type of the worker group nodes. Must be large enough to support the amount of NICS assigned to pods."
-  default     = ["t3.large"]
+  default     = ["t2.medium"]
 }
 
 variable "autoscaling_group_min_size" {

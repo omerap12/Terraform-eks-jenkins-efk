@@ -1,6 +1,8 @@
 module "efs" {
   source = "terraform-aws-modules/efs/aws"
 
+  depends_on = [ aws_subnet.dev1-subnet, aws_subnet.dev2-subnet]
+
   # File system
   name           = "test"
   creation_token = "example-token"
